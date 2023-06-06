@@ -219,7 +219,7 @@ subroutine main()
 	    m1_1 = m1_1 + n_end1(z)*(dble(z)-0.5)
 	    m1_2 = m1_2 + n_end2(z)*(dble(z)-0.5)
     enddo
-    m1_1 = 0.0; m1_2 = 0.0
+   
     if (sum1.gt.0.0) m1_1 = m1_1/sum1
     if (sum2.gt.0.0) m1_2 = m1_2/sum2
     !!!! calculating Flory's interaction free energy
@@ -239,7 +239,7 @@ subroutine main()
     & - sum(U1(1:n_layer)*phi_pol1(1:n_layer)) &
     & - sum(U2(1:n_layer)*phi_pol2(1:n_layer)) &
     & - sum(Us(1:n_layer)*phi_solv(1:n_layer)) &
-    & - dble(N1)*sigma1*(chi1+chi12-1.0) - dble(N2)*sigma2**(chi2+chi12-1.0) 
+    & - dble(N1)*sigma1*(chi1+chi12-1.0) - dble(N2)*sigma2*(chi2+chi12-1.0) 
     !!!!
     call print_data(m1_1, m1_2, F)
     
