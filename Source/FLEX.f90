@@ -116,14 +116,18 @@ subroutine main()
         phi_pol2(:) = phi2(:,-1) + phi2(:,0) + phi2(:,1)
         part_fun2 = sum(phi_pol2(1:n_layer))
         !!!!
-        phi1(:,-1) = sigma1*phi1(:,-1)*dble(N1)/part_fun1
-        phi1(:,0) = sigma1*phi1(:,0)*dble(N1)/part_fun1
-        phi1(:,1) = sigma1*phi1(:,1)*dble(N1)/part_fun1
+	if (sigma1.gt.0.0) then
+        	phi1(:,-1) = sigma1*phi1(:,-1)*dble(N1)/part_fun1
+        	phi1(:,0) = sigma1*phi1(:,0)*dble(N1)/part_fun1
+        	phi1(:,1) = sigma1*phi1(:,1)*dble(N1)/part_fun1
+	endif
         phi_pol1(:) = phi1(:,-1) + phi1(:,0) + phi1(:,1)
         !!!!
-        phi2(:,-1) = sigma2*phi2(:,-1)*dble(N2)/part_fun2
-        phi2(:,0) = sigma2*phi2(:,0)*dble(N2)/part_fun2
-        phi2(:,1) = sigma2*phi2(:,1)*dble(N2)/part_fun2      
+	if (sigma2.gt.0.0) then
+        	phi2(:,-1) = sigma2*phi2(:,-1)*dble(N2)/part_fun2
+        	phi2(:,0) = sigma2*phi2(:,0)*dble(N2)/part_fun2
+        	phi2(:,1) = sigma2*phi2(:,1)*dble(N2)/part_fun2 
+	endif
         phi_pol2(:) = phi2(:,-1) + phi2(:,0) + phi2(:,1)
         !!!! Flory-Huggins interactions 
         W1(:) = U1(:); W2(:) = U2(:); Ws(:) = Us(:)
@@ -182,10 +186,24 @@ subroutine main()
         &             Gf2(z,N2,-1)*Gb2(z,N2,1)/WB2(z) + &
         &             Gf2(z,N2,1)*Gb2(z,N2,-1)/WB2(z)
     enddo
-   	do z = 1, n_layer
-    	n_end1(z) = n_end1(z)*dble(N1)/part_fun1
-    	n_end2(z) = n_end2(z)*dble(N2)/part_fun2
-   	enddo
+    
+    if (sigma1.gt.0.0) then
+    	do z = 1, n_layer
+    		n_end1(z) = n_end1(z)*dble(N1)/part_fun1
+      	enddo
+    else
+    	n_end1(:) = 0.0
+    endif
+    
+    if (sigma2.gt.0.0) then
+    	do z = 1, n_layer
+    		n_end2(z) = n_end2(z)*dble(N2)/part_fun2
+      	enddo
+    else
+    	n_end2(:) = 0.0
+    endif
+    
+   
    	!!!! printing profiles
     if (swpro.ne.0) call print_phi_profiles()
     !!!! first moments
@@ -200,9 +218,10 @@ subroutine main()
 	    sum2 = sum2 + n_end2(z)
 	    m1_1 = m1_1 + n_end1(z)*(dble(z)-0.5)
 	    m1_2 = m1_2 + n_end2(z)*(dble(z)-0.5)
-	enddo
-    m1_1 = m1_1/sum1
-    m1_2 = m1_2/sum2
+    enddo
+    m1_1 = 0.0; m1_2 = 0.0
+    if (sum1.gt.0.0) m1_1 = m1_1/sum1
+    if (sum2.gt.0.0) m1_2 = m1_2/sum2
     !!!! calculating Flory's interaction free energy
     Uint1 = 0.0; Uint2 = 0.0; Uints = 0.0    
     call calc_U_int(chi1, phi_solv, 1.0_8, phi_pol1, Uint1)
